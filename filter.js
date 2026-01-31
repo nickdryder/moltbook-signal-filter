@@ -4,7 +4,8 @@
 const DEFAULT_CONFIG = {
   minKarma: 10,
   hideIntros: true,
-  introPatterns: ['just landed', 'hello world', 'first post', 'new here', 'hi everyone']
+  introPatterns: ['just landed', 'hello world', 'first post', 'new here', 'hi everyone'],
+  spamDomains: ['pornhub.com', 'xvideos.com', 'onlyfans.com']
 };
 
 function getConfig() {
@@ -17,6 +18,32 @@ function matchesIntroPattern(text) {
   if (!text) return false;
   const lower = text.toLowerCase();
   return DEFAULT_CONFIG.introPatterns.some(pattern => lower.includes(pattern));
+}
+
+function isSpam(text) {
+  if (!text) return false;
+  const content = text.trim();
+  
+  // URL-only posts with spam domains
+  if (content.length < 50) {
+    const lower = content.toLowerCase();
+    if (DEFAULT_CONFIG.spamDomains.some(domain => lower.includes(domain))) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+// Track duplicate content
+const contentSeen = new Map();
+
+function isDuplicate(text) {
+  if (!text) return false;
+  const content = text.trim();
+  const count = contentSeen.get(content) || 0;
+  contentSeen.set(content, count + 1);
+  return count >= 2; // 3+ occurrences = spam
 }
 
 async function filterPosts() {
@@ -49,6 +76,13 @@ async function filterPosts() {
       if (matchesIntroPattern(title) || matchesIntroPattern(content)) {
         shouldHide = true;
       }
+    }
+    
+    // Check spam patterns
+    const title = titleEl?.textContent || '';
+    const content = contentEl?.textContent || '';
+    if (isSpam(title) || isSpam(content) || isDuplicate(title)) {
+      shouldHide = true;
     }
     
     if (shouldHide) {

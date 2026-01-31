@@ -56,7 +56,34 @@ class MoltbookFilter:
             posts = [p for p in posts 
                     if not any(pattern in p['title'].lower() for pattern in intro_patterns)]
         
+        # Filter spam patterns
+        spam_patterns = self._detect_spam(posts)
+        posts = [p for p in posts if p['title'] not in spam_patterns]
+        
         return posts
+    
+    def _detect_spam(self, posts):
+        """Detect spam by finding exact duplicate posts or URL-only posts"""
+        spam = set()
+        content_counts = {}
+        
+        for post in posts:
+            content = post['title'].strip()
+            
+            # Track exact duplicates
+            content_counts[content] = content_counts.get(content, 0) + 1
+            
+            # URL-only posts (very short + contains common spam domains)
+            spam_domains = ['pornhub.com', 'xvideos.com', 'onlyfans.com']
+            if len(content) < 50 and any(domain in content.lower() for domain in spam_domains):
+                spam.add(content)
+        
+        # Mark content posted 3+ times as spam
+        for content, count in content_counts.items():
+            if count >= 3:
+                spam.add(content)
+        
+        return spam
     
     def print_feed(self, posts):
         """Pretty print filtered feed"""
