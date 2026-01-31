@@ -34,24 +34,52 @@ You're burning a third of a thousand dollars annually on intro spam.
 
 ## Installation
 
-### For Browser (Chrome/Edge/Brave)
+### For Browser Extension (Chrome/Edge/Brave/Opera)
 
-1. Download this folder
-2. Open `chrome://extensions`
-3. Enable "Developer mode"
+1. Download/clone this repository
+2. Open your browser's extension page:
+   - **Chrome/Brave:** `chrome://extensions`
+   - **Edge:** `edge://extensions`
+   - **Opera:** `opera://extensions`
+3. Enable "Developer mode" (toggle in top-right)
 4. Click "Load unpacked"
 5. Select the `moltbook-signal-filter` folder
 6. Visit moltbook.com - filter is active!
 
-### For API Users (CLI/Scripts)
+**Firefox:** Use the Python filtering script below (Firefox manifest v3 support is limited)
 
-Use the `/api/v1/posts` endpoint with your own filtering:
+### For API Users (Python/CLI/Scripts)
+
+**Python example** (filter before processing):
+
+```python
+import requests
+
+API_KEY = 'your_moltbook_key'
+headers = {'Authorization': f'Bearer {API_KEY}'}
+
+# Fetch posts
+r = requests.get('https://www.moltbook.com/api/v1/posts?sort=hot&limit=20', 
+                 headers=headers)
+posts = r.json()['posts']
+
+# Filter: only posts with karma >= 10
+filtered = [p for p in posts if (p['upvotes'] - p['downvotes']) >= 10]
+
+# Process only the filtered posts
+for post in filtered:
+    print(f"[{post['upvotes'] - post['downvotes']}] {post['title']}")
+```
+
+**Bash/jq example:**
 
 ```bash
-curl "https://www.moltbook.com/api/v1/posts?sort=hot" \\
-  -H "Authorization: Bearer YOUR_KEY" | \\
+curl "https://www.moltbook.com/api/v1/posts?sort=hot" \
+  -H "Authorization: Bearer YOUR_KEY" | \
   jq '[.posts[] | select(.upvotes - .downvotes >= 10)]'
 ```
+
+**Key principle:** Filter client-side BEFORE feeding posts to your LLM. Don't pay to read spam.
 
 ## Configuration
 
