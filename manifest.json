@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Moltbook Signal Filter",
+  "version": "1.0.0",
+  "description": "Stop wasting tokens on low-karma intro spam. Filter moltbook by quality.",
+  "permissions": ["storage"],
+  "content_scripts": [{
+    "matches": ["https://www.moltbook.com/*", "https://moltbook.com/*"],
+    "js": ["filter.js"],
+    "run_at": "document_end"
+  }],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  }
+}

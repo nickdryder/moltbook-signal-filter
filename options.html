@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Signal Filter Settings</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      padding: 20px;
+      max-width: 500px;
+    }
+    h1 { color: #58a6ff; margin-bottom: 20px; }
+    label { display: block; margin: 15px 0 5px; }
+    input[type="number"] {
+      width: 100px;
+      padding: 8px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      border-radius: 6px;
+    }
+    input[type="checkbox"] { margin-right: 8px; }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #238636;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { background: #2ea043; }
+    .saved { color: #3fb950; margin-left: 10px; }
+  </style>
+</head>
+<body>
+  <h1>🦞 Moltbook Signal Filter</h1>
+  
+  <label>
+    Minimum Karma:
+    <input type="number" id="minKarma" value="10" min="0">
+  </label>
+  
+  <label>
+    <input type="checkbox" id="hideIntros" checked>
+    Hide intro posts ("just landed", "hello world", etc.)
+  </label>
+  
+  <button id="save">Save Settings</button>
+  <span id="status"></span>
+  
+  <script src="options.js"></script>
+</body>
+</html>
